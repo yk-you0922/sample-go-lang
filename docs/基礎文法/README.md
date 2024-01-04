@@ -239,3 +239,62 @@ func main() {
 	time.Sleep(3 * time.Second) // goroutinの完了を待つために簡易的にsleep
 }
 ```
+
+### Sync.Wait
+非同期処理をする際に、タスクAが終わらないとタスクBができないような処理の場合には、処理を待たせることも可能。
+詳細は[こちら](https://kirohi.com/%E3%80%90go%E5%85%A5%E9%96%80%E3%80%91%E3%82%B4%E3%83%AB%E3%83%BC%E3%83%81%E3%83%B3%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%E3%81%AE%E7%B0%A1%E5%8D%98%E3%81%AA%E8%A7%A3%E8%AA%AC)
+
+### チャネル-select
+複数チャネルを操作する場合に利用する文法。  
+select内でどのcase文に処理が移行するのかはランダムとなっている。
+
+```go
+	ch1 := make(chan int, 2)
+	ch2 := make(chan string, 2)
+
+	ch1 <- 1
+	ch2 <- "A"
+	ch1 <- 2
+	ch2 <- "B"
+
+	/**
+	* どのチャネルを実施するかを選択する
+	 */
+	// どのケース式が実行されるかはランダム
+	// 何かしらの値があればdefaultには入らない
+	select {
+	case v1 := <-ch1:
+		fmt.Println(v1 + 1000)
+	case v2 := <-ch2:
+		fmt.Println(v2 + "!?")
+	default:
+		fmt.Println("どちらでもない")
+	}
+```
+
+エラーとなる例
+```go
+	ch1 := make(chan int, 2)
+	ch2 := make(chan string, 2)
+
+	ch1 <- 1
+	
+	v1 := <-ch1
+	fmt.Println(v1 + 1000)
+	v2 := <-ch2
+	fmt.Println(v2 + "!?") // ch2に値がないのでエラー
+
+	/**
+	* どのチャネルを実施するかを選択する
+	 */
+	// どのケース式が実行されるかはランダム
+	// 何かしらの値があればdefaultには入らない
+	select {
+	case v1 := <-ch1:
+		fmt.Println(v1 + 1000)
+	case v2 := <-ch2:
+		fmt.Println(v2 + "!?")
+	default:
+		fmt.Println("どちらでもない")
+	}
+```
