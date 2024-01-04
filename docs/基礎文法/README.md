@@ -327,3 +327,5 @@ func main() {
 ```
 
 その他の解説は[こちら](https://recursionist.io/learn/languages/go/complex/pointer)を参照のこと。
+
+特に構造体のフィールドをセットする際などは意識しないと更新されない状態になるので意識すること。
