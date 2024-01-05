@@ -269,8 +269,108 @@ Hello
 GolangYaah
 ```
 
-
 ## time
+日時に関するパッケージ
+
+### 基本
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+
+	t := time.Now() // 現在時刻の取得
+	fmt.Println(t)
+
+	t2 := time.Date(2020, 6, 10, 10, 10, 10, 0, time.Local) // 2020年6月10日 10:10:10
+	fmt.Println(t2)
+	fmt.Println(t2.Year())
+	fmt.Println(t2.YearDay())
+	fmt.Println(t2.Month())
+	fmt.Println(t2.Weekday())
+	fmt.Println(t2.Day())
+	fmt.Println(t2.Hour())
+	fmt.Println(t2.Minute())
+	fmt.Println(t2.Second())
+	fmt.Println(t2.Nanosecond())
+	fmt.Println(t2.Zone())
+}
+```
+
+### 文字列から時間を生成
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	d, _ := time.ParseDuration("2h30m")
+	fmt.Println(d)
+}
+```
+
+### X時間後を出力
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	t3 := time.Now() // 現在時刻
+	t3 = t3.Add(2*time.Minute + 15*time.Second) // 現在時刻の2時間30分後を表すtime.Time型
+	fmt.Println(t3)
+}
+```
+
+### 時間の比較
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	t5 := time.Date(2021, 7, 24, 0, 0, 0, 0, time.Local)
+	t6 := time.Now()
+	fmt.Println(t6)
+
+	d2 := t5.Sub(t6) // 時刻の差分を取得
+	fmt.Println(d2)
+
+	fmt.Println(t6.Before(t5)) // false
+	fmt.Println(t6.After(t5)) // true
+	fmt.Println(t5.Before(t6)) // true
+	fmt.Println(t5.After(t6)) // false
+}
+```
+
+### sleep
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	fmt.Println("スタート")
+	time.Sleep(5 * time.Second)
+	fmt.Println("5秒間停止後")
+}
+```
 
 ## math
 
