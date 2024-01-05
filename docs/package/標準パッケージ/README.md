@@ -469,6 +469,79 @@ func main() {
 現在時刻を用いた乱数生成が一番手軽。
 
 ## flag
+コマンドラインからプログラムに与えられた引数やオプションを効率的に処理する際に用いるパッケージ  
+シンプルなコマンドを作成する際に利用されるパッケージ
+
+```go
+package main
+
+import (
+	"flag"
+	"fmt"
+)
+
+/**
+* コマンドラインを処理するサンプル
+* go run main.go -n 20 -m message -x
+ */
+func main() {
+
+	var (
+		max int
+		msg string
+		x bool
+	)
+
+	// IntVar 整数のオプション
+	flag.IntVar(&max, "n", 32, "処理数の最大値")
+
+	// StringVar 文字列のオプション
+	flag.StringVar(&msg, "m", "", "処理メッセージ")
+
+	// BoolVar bool型のオプション コマンドラインに与えられたらtrue なければfalse
+	flag.BoolVar(&x, "x", false, "拡張オプション")
+
+	// コマンドラインをパース
+	flag.Parse()
+
+	fmt.Println("処理数の最大値 =", max)
+	fmt.Println("処理メッセージ =", msg)
+	fmt.Println("拡張オプション =", x)
+}
+```
+
+処理結果
+```bash
+go run main.go -n 20 -m message -x
+
+処理数の最大値 = 20
+処理メッセージ = message
+拡張オプション = true
+```
+
+引数全くなし処理結果
+```bash
+go run main.go
+
+処理数の最大値 = 32
+処理メッセージ = 
+拡張オプション = false
+```
+デフォルトで付与している処理結果が出力される。
+
+存在しないオプションを渡した場合はヘルプメッセージが出力される仕組みとなっている。
+```bash
+go run main.go -z
+
+flag provided but not defined: -z
+Usage of /tmp/go-build1517213371/b001/exe/main:
+  -m string
+        処理メッセージ
+  -n int
+        処理数の最大値 (default 32)
+  -x    拡張オプション
+exit status 2
+```
 
 ## fmt
 
