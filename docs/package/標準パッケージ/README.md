@@ -796,6 +796,204 @@ func main() {
 ```
 
 ## log
+シンプルなログを出力するためのパッケージ  
+日付と時刻とメッセージ内容が出力される(形式：`YYYY/MM/DD HH:mm:dd <message>`)
+
+### 通常のログ（`log.Print()`）
+```go
+package main
+
+import (
+	"log"
+	"os"
+)
+
+func main() {
+	// ログの出力先を変更
+	log.SetOutput(os.Stdout)
+
+	log.Print("Log\n")
+	log.Println("Log2")
+	log.Printf("Log%d\n", 3)
+}
+```
+
+結果
+```bash
+go run main.go
+
+2024/01/05 18:37:07 Log
+2024/01/05 18:37:07 Log2
+2024/01/05 18:37:07 Log3
+```
+
+### Exitコードを伴ったログ（`log.Fetal()`）
+```go
+package main
+
+import (
+	"log"
+	"os"
+)
+
+func main() {
+	// ログの出力先を変更
+	log.SetOutput(os.Stdout)
+
+	// log.Print("Log\n")
+	// log.Print("Log2")
+	// log.Printf("Log%d\n", 3)
+
+	log.Fatal("Log\n")
+	log.Fatalln("Log2")
+	log.Fatalf("Log%d\n", 3)
+}
+```
+
+結果
+```bash
+go run main.go
+
+2024/01/05 18:38:33 Log
+exit status 1
+```
+１回目のFetalログを出力し、exitコードが出力され、他のログは出ない。
+
+### パニックを伴ったログ出力(`log.Panic()`)
+```go
+package main
+
+import (
+	"log"
+	"os"
+)
+
+func main() {
+	// ログの出力先を変更
+	log.SetOutput(os.Stdout)
+
+	log.Panic("Log\n")
+	log.Panicln("Log2")
+	log.Panicf("Log%d\n", 3)
+}
+```
+
+結果
+```bash
+go run main.go
+
+2024/01/05 18:39:59 Log
+panic: Log
+
+
+goroutine 1 [running]:
+log.Panic({0xc000104f60?, 0x4c3678?, 0xc000012018?})
+        /usr/local/go/src/log/log.go:384 +0x65
+main.main()
+        /home/yk-you0922/go/src/sample-go-lang/udemy/src/standardLibraries/log/main.go:20 +0x65
+exit status 2
+```
+１回目のログだけを出力し、パニックとしてプログラムが終了する。
+
+### ファイルに出力
+```go
+package main
+
+import (
+	"log"
+	"os"
+)
+
+func main() {
+	f, err := os.Create("test.log") // ログ出力ファイルの作成
+	if err != nil {
+		return // ファイルが作成できなければ早期リターン
+	}
+
+	log.SetOutput(f) // 出力先をファイルに設定
+	log.Println("ファイルに書き込む") // ファイルにログを書き込む
+}
+```
+
+結果(test.log)
+```log
+2024/01/05 18:44:28 ファイルに書き込む
+```
+
+### ログのフォーマットを指定
+```go
+package main
+
+import (
+	"log"
+	"os"
+)
+
+func main() {
+	// ログの出力先を変更
+	log.SetOutput(os.Stdout)
+
+	// 標準のログフォーマット
+	log.SetFlags(log.LstdFlags)
+	log.Println("A") // 2024/01/05 18:48:36 A
+
+	// マイクロ秒を追加
+	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds)
+	log.Println("B") // 2024/01/05 18:48:36.848490 B
+
+	// 時刻とファイルの行番号（短縮系）
+	log.SetFlags(log.Ltime | log.Lshortfile)
+	log.Println("C") // 18:48:36 main.go:22: C
+
+	log.SetFlags(log.LstdFlags)
+
+	// ログのプリフィックスを設定
+	log.SetPrefix("[LOG]")
+	log.Println("E") // [LOG]2024/01/05 18:48:36 E
+}
+```
+
+### ロガーの生成
+Goのlogパッケージはデフォルトで設定されている1つの設定を全体に適応しているため、小回りが利かないようになっているため  
+ロガーを生成し、個別に設定を付与することができる。
+
+```go
+package main
+
+import (
+	"log"
+	"os"
+)
+
+func main() {
+	// ロガーの生成
+	logger := log.New(os.Stdout, "", log.Ldate | log.Ltime | log.Lshortfile)
+	logger.Println("message")
+	log.Println("message")
+
+	// 条件分岐。エラーで終了させる。
+	_, err := os.Open("fadafdsafa")
+	if err != nil {
+		// ログ出力
+		logger.Fatalln("Exit, err")
+	}
+}
+
+```
+
+出力結果
+```bash
+go run main.go
+
+2024/01/05 19:00:36 main.go:11: message
+2024/01/05 19:00:36 message
+2024/01/05 19:00:36 main.go:18: Exit, err
+exit status 1
+```
+ロガーでファイルの行番号まで指定しているので、行番号まで出力された。
+
+
+
 
 ## strconv
 
