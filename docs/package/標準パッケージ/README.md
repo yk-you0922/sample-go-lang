@@ -544,6 +544,256 @@ exit status 2
 ```
 
 ## fmt
+標準出力に用いるパッケージ
+
+Goでは書式指定子 %... のことを verb と表記している。
+- 論理値(bool)：%t
+- 符号付き整数(int, int8など)：%d
+- 符号なし整数(uint, uint8など) ：%d
+- 浮動小数点数(float64など) ：%g
+- 複素数(complex128など)：%g
+- 文字列(string)：%s
+- チャネル(chan)：%p
+- ポインタ(pointer)：%p
+
+### デフォルトフォーマット
+```go
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    Favorite string
+}
+
+func main() {
+    p := new(Person)
+    p.Name = "sekky"
+    p.Favorite = "Programming"
+    fmt.Printf("構造体 = %v", p) // 構造体 = &{sekky Programming}
+}
+```
+
+### %+vフラグ付きデフォルトフォーマット
+フラグ（%v）を付け加えるとフィールド名が表示される
+```go
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    Favorite string
+}
+
+func main() {
+    p := new(Person)
+    p.Name = "sekky"
+    p.Favorite = "Programming"
+    fmt.Printf("構造体 = %+v", p) // 構造体 = &{Name:sekky Favorite:Programming}
+}
+```
+
+### %#v Go言語の構文で表現
+
+```go
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    Favorite string
+}
+
+func main() {
+    p := new(Person)
+    p.Name = "sekky"
+    p.Favorite = "Programming"
+    fmt.Printf("構造体 = %#v\n", p)
+
+    a := [...]string{"Go", "Java", "Python", "Ruby", "Rust"} // 構造体 = &main.Person{Name:"sekky", Favorite:"Programming"}
+    fmt.Printf("配列 = %#v", a) // 配列 = [5]string{"Go", "Java", "Python", "Ruby", "Rust"}
+}
+```
+### %T 値の型
+`%T`を指定することにより、型を出力できるようになる。
+
+```go
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    Favorite string
+}
+
+func main() {
+    p := new(Person)
+    p.Name = "sekky"
+    p.Favorite = "Programming"
+    fmt.Printf("構造体 = %T\n", p) // 構造体 = *main.Person
+
+    a := [...]string{"Go", "Java", "Python", "Ruby", "Rust"}
+    fmt.Printf("配列 = %T\n", a) // 配列 = [5]string
+
+    s := []int{0, 1, 2}
+    fmt.Printf("スライス = %T\n", s) // スライス = []int
+
+    n := 7
+    fmt.Printf("int = %T\n", n) // int = int
+
+    str := "sekky"
+    fmt.Printf("string = %T\n", str) // string = string
+
+    b := true
+    fmt.Printf("bool = %T\n", b) // bool = bool
+}
+```
+
+### %t 単語、trueまたはfalse
+```go
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    Favorite string
+}
+
+func main() {
+
+    b := true
+    fmt.Printf("%t\n", b) // true
+
+    b = false
+    fmt.Printf("%t\n", b) // false
+
+    str := "Go"
+    fmt.Printf("%t\n", str) // %!t(string=Go)
+
+    n := 1
+    fmt.Printf("%t\n", n) // %!t(int=1)
+
+    p := new(Person)
+    p.Name = "sekky"
+    fmt.Printf("%t\n", p) // &{%!t(string=sekky) %!t(string=)}
+}
+```
+
+### %s 文字列、スライス
+```go
+package main
+
+import (
+    "fmt"
+)
+
+func main() {
+
+    str := "Go"
+    fmt.Printf("文字列 = %s\n", str) // 文字列 = Go
+
+    s := []string{"Go", "Java"}
+    fmt.Printf("スライス = %s", s) // スライス = [Go Java]
+}
+```
+
+### 数値系
+```go
+package main
+
+import (
+    "fmt"
+)
+
+func main() {
+
+    // %b 基数2
+    b := 5
+    fmt.Printf("基数2 = %b\n", b) // 基数2 = 101
+
+    // %c 対応するUnicodeコードポイントによって表される文字
+    c := '\101'
+    fmt.Printf("Unicodeコードポイント = %c\n", c) // Unicodeコードポイント = A
+
+    // %d 基数10
+    d := 5
+    fmt.Printf("基数10 = %d\n", d) // 基数10 = 5
+
+    // %o 基数8
+    o := 20
+    fmt.Printf("基数8 = %o\n", o) // 基数8 = 24
+
+    // %x 基数16、10以上の数には小文字(a-f)を使用
+    x := 2059
+    fmt.Printf("基数16、10以上の数には小文字(a-f)を使用 = %x\n", x) // 基数16、10以上の数には小文字(a-f)を使用 = 80b
+
+    // %X 基数16、10以上の数には大文字(A-F)を使用
+    X := 2059
+    fmt.Printf("基数16、10以上の数には大文字(A-F)を使用 = %X\n", X) // 基数16、10以上の数には大文字(A-F)を使用 = 80B
+
+    // %U ユニコードフォーマット: U+1234; "U+%x"と同じ。デフォルトは、4桁
+    U := '\101'
+    fmt.Printf("ユニコードフォーマット = %U\n", U) // ユニコードフォーマット = U+0041
+}
+```
+
+### ポインタ
+```go
+package main
+
+import (
+    "fmt"
+)
+
+type Person struct {
+    Name     string
+    Favorite string
+}
+
+func main() {
+    p := new(Person)
+    p.Name = "sekky"
+    p.Favorite = "Programming"
+    fmt.Printf("構造体 = %p", p) // 構造体 = 0x1040a130
+}
+```
+
+### 出力先を指定する
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	// 標準出力
+	fmt.Fprint(os.Stdout, "Hello")
+	fmt.Fprint(os.Stdout, "Hello")
+	fmt.Fprint(os.Stdout, "Hello")
+
+	f, _ := os.Create("test.txt") // test.txtを作成
+	defer f.Close() // 遅延処理、最後にファイルをクローズ処理
+
+	fmt.Fprint(f, "Fprint") // test.txtに"Fprint"という文字列を書き込む
+}
+```
 
 ## log
 
