@@ -1,5 +1,30 @@
 # 標準パッケージ
 
+## 公式ドキュメントリンク集
+| No  | パッケージ名    | 説明                                                                                                                              | リンク                       |
+| --- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| 1   | os              | オペレーティング システム機能へのプラットフォームに依存しないインターフェイスを提供                                               | https://pkg.go.dev/os        |
+| 2   | time            | パッケージ時間には、時間を測定および表示する機能                                                                                  | https://pkg.go.dev/time      |
+| 3   | math            | 基本的な定数と数学関数を提供                                                                                                      | https://pkg.go.dev/math      |
+| 4   | rand            | シミュレーションなどのタスクに適した擬似乱数生成器を実装。セキュリティが重要な作業には使用しない                                  | https://pkg.go.dev/math/rand |
+| 5   | flag            | コマンドライン フラグ解析を実装                                                                                                   | https://pkg.go.dev/flag      |
+| 6   | fmt             | フォーマットされた I/O を実装                                                                                                     | https://pkg.go.dev/fmt       |
+| 7   | log             | 単純なログ パッケージを実装                                                                                                       | https://pkg.go.dev/log       |
+| 8   | strconv         | 基本データ型の文字列表現との変換を実装                                                                                            | https://pkg.go.dev/strconv   |
+| 9   | strings         | UTF-8 でエンコードされた文字列を操作するための単純な関数を実装                                                                    | https://pkg.go.dev/strings   |
+| 10  | bufio           | バッファリングされた I/O を実装                                                                                                   | https://pkg.go.dev/bufio     |
+| 11  | loutil          | I/O ユーティリティ関数を実装。非推奨: Go 1.16 では、同じ機能がパッケージioまたはパッケージosによって提供されている。              | https://pkg.go.dev/io/ioutil |
+| 12  | regexp          | 正規表現検索を実装                                                                                                                | https://pkg.go.dev/regexp    |
+| 13  | sync            | 相互排他ロックなどの基本的な同期プリミティブを提供。このパッケージで定義されている型を含む値はコピーしない。                      | https://pkg.go.dev/sync      |
+| 14  | crypto          | 共通の暗号定数を収集                                                                                                              | https://pkg.go.dev/crypto    |
+| 15  | json            | RFC 7159で定義されている JSON のエンコードとデコードを実装                                                                        | https://pkg.go.dev/json      |
+| 16  | sort            | スライスとユーザー定義のコレクションをソートするためのプリミティブを提供                                                          | https://pkg.go.dev/sort      |
+| 17  | context         | 期限、キャンセル シグナル、および API 境界を越えてプロセス間でリクエストをスコープとするその他の値を伝達する Context タイプを定義 | https://pkg.go.dev/context   |
+| 18  | net/url         | HTTP クライアントとサーバーの実装を提供                                                                                           | https://pkg.go.dev/net       |
+| 19  | net/http client | HTTP クライアントとサーバーの実装を提供                                                                                           | https://pkg.go.dev/net       |
+| 20  | net/http server | HTTP クライアントとサーバーの実装を提供                                                                                           | https://pkg.go.dev/net       |
+
+
 ## os
 ### os.Exit
 osパッケージを利用すると任意のタイミングで処理を終了し、Exitステータスを指定できる。
@@ -992,10 +1017,8 @@ exit status 1
 ```
 ロガーでファイルの行番号まで指定しているので、行番号まで出力された。
 
-
-
-
 ## strconv
+基本データ型の文字列表現との変換を実装するパッケージ
 
 ## strings
 
