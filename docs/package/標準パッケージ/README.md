@@ -1050,8 +1050,38 @@ UTF-8 でエンコードされた文字列を操作するための単純な関�
 - 文字列からスペース区切りのフィールドを取り出す
   - strings.Fields()
 
-
 ## bufio
+バッファリングされた I/O を実装。  
+io.Reader または io.Writer オブジェクトをラップし、同様にインターフェイスを実装する別のオブジェクト  
+ (Reader または Writer) を作成するが、テキスト I/O のバッファリングといくつかのヘルプを提供
+
+```go
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+	// 標準入力を行単位で読み込む
+	// スキャナの生成
+	scanner := bufio.NewScanner(os.Stdin)
+
+	// 入力のスキャンが成功する限り繰り返すループ
+	for scanner.Scan() {
+		// スキャン内容を文字列で出力
+		fmt.Println(scanner.Text())
+	}
+
+	// スキャンにエラーが発生した場合の処理
+	if err := scanner.Err(); err != nil {
+		fmt.Println(os.Stderr, "読み込みエラー", err)
+	}
+
+}
+```
 
 ## ioutil
 
