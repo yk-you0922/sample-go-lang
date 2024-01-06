@@ -1366,51 +1366,337 @@ syncのミューテックス型には一つのgoroutineのみがロックを取�
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"sync"
+	"log"
+	"time"
 )
 
+type A struct{}
+
+type User struct {
+	ID      int       `json:"id"` // フィールド  型  jsonに変換した際のフィールド名（指定なしも可能）
+	Name    string    `json:"name"`
+	Email   string    `json:"email"`
+	Created time.Time `json:"created"`
+	A       A         `json:"A"`
+}
+
 func main() {
-	// sync.WaitGroupを生成
-	wg := new(sync.WaitGroup)
 
-	// 待ち受けるgoroutineの数は3
-	wg.Add(3)
+	u := new(User)
+	u.ID = 1
+	u.Name = "test"
+	u.Email = "test@test.com"
+	u.Created = time.Now()
 
-	go func() {
-		for i := 0; i < 100; i++ {
-			fmt.Println("1st Goroutine")
-		}
-		wg.Done() // 完了
-	}()
+	// Marshal JSONに変換 ⇒ 返り値：byteのスライス
+	bs, err := json.Marshal(u)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	go func() {
-		for i := 0; i < 100; i++ {
-			fmt.Println("2nd Goroutine")
-		}
-		wg.Done() // 完了
-	}()
-
-	go func() {
-		for i := 0; i < 100; i++ {
-			fmt.Println("3rd Goroutine")
-		}
-		wg.Done() // 完了
-	}()
-
-	// goroutineの終了を待ち受ける。wg,Done()が3つ完了するまで待つ。
-	wg.Wait()
+	fmt.Println(string(bs))
 }
 ```
 
-## crypto
-ハッシュ値を生成する機能などを提供するパッケージ  
-参考コード：[strconv-sample](../../../udemy/src/standardLibraries/crypto/main.go)
+処理結果
+```go
+{"id":1,"name":"test","email":"test@test.com","created":"2024-01-06T22:30:25.760522681+09:00","A":{}}
+```
 
-参考コードのMD5の他にもSHA-1, SHA-256, SHA-512なども対応している。
+### json形式への変換時の補足
+idのint型をjson上、文字列として扱いたい場合は下記のように設定する。
+```go
+type User struct {
+	ID      int       `json:"id,string"`
+	/** 以下省略 */
+}
+```
 
-## json
+処理結果
+```go
+{"id":"1","name":"test","email":"test@test.com","created":"2024-01-06T22:30:25.760522681+09:00","A":{}}
+```
 
+idのint型をjson上、表示したくない場合は下記のように設定する。
+```go
+type User struct {
+	ID      int       `json:"-"`
+	/** 以下省略 */
+}
+```
+
+処理結果
+```go
+{"name":"test","email":"test@test.com","created":"2024-01-06T22:30:25.760522681+09:00","A":{}}
+```
+
+### omitempty
+各型の初期値（intなら0、stringなら""）が構造体で設定された場合、json上表示したくない場合がある。  
+その際の設定方法として`omitempty`という設定方法がある。
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
+)
+
+type A struct{}
+
+type User struct {
+	ID      int       `json:"id,omitempty"` // 初期値の場合、jsonに表示しない
+	Name    string    `json:"name,omitempty"` // 初期値の場合、jsonに表示しない
+	Email   string    `json:"email"`
+	Created time.Time `json:"created"`
+	A       *A        `json:"A,omitempty"` // 空の構造体の場合、ポインタ型にしてomitempty指定するとjsonに表示されなくなる。
+}
+
+func main() {
+
+	u := new(User)
+	u.ID = 0 // 初期値が設定
+	u.Name = ""// 初期値が設定
+	u.Email = "test@test.com"
+	u.Created = time.Now()
+
+	// Marshal JSONに変換 ⇒ 返り値：byteのスライス
+	bs, err := json.Marshal(u)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(bs))
+}
+```
+
+処理結果
+```go
+{"email":"test@test.com","created":"2024-01-06T22:30:25.760522681+09:00"}
+```
+
+### jsonからの変換（デコード）
+
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
+)
+
+type A struct{}
+
+type User struct {
+	ID      int       `json:"id"`
+	Name    string    `json:"name"`
+	Email   string    `json:"email"`
+	Created time.Time `json:"created"`
+	A       *A        `json:"A"`
+}
+
+func main() {
+
+	u := new(User)
+	u.ID = 1
+	u.Name = "test"
+	u.Email = "test@test.com"
+	u.Created = time.Now()
+
+	// Marshal JSONに変換 ⇒ 返り値：byteのスライス
+	bs, err := json.Marshal(u)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(bs))
+
+	// -----------------------------------
+
+	fmt.Printf("%T\n", bs) // bsの型を調べる⇒バイトのスライス
+
+	u2 := new(User)
+
+	// Unmarshal JSONをデータに変換
+	if err := json.Unmarshal(bs, u2); err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(u2)
+}
+```
+
+### マーシャルのカスタム
+構造体からJSONに変更する際に値をカスタムしたい際は、ユーザのメソッドとしてMarshalJSONというメソッドを用意する必要がある。
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
+)
+
+// マーシャルのカスタム
+
+type A struct{}
+
+type User struct {
+	ID      int       `json:"id"`
+	Name    string    `json:"name"`
+	Email   string    `json:"email"`
+	Created time.Time `json:"created"`
+	A       *A        `json:"A"`
+}
+
+// Json⇒構造体への変換時に値をカスタムする
+func (u User) MarshalJSON() ([]byte, error) {
+	v, err := json.Marshal(&struct {
+		Name string
+	}{
+		Name: "Mr" + u.Name,
+	})
+	return v, err
+}
+
+func main() {
+
+	u := new(User)
+	u.ID = 1
+	u.Name = "test"
+	u.Email = "test@test.com"
+	u.Created = time.Now()
+
+	// Marshal JSONに変換 ⇒ 返り値：byteのスライス
+	bs, err := json.Marshal(u) // この際にMarshalJSON()メソッドが暗黙的に呼び出されている。
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(bs))
+
+	// -----------------------------------
+
+	fmt.Printf("%T\n", bs) // bsの型を調べる⇒バイトのスライス
+
+	u2 := new(User)
+
+	// Unmarshal JSONをデータに変換
+	if err := json.Unmarshal(bs, u2); err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(u2)
+}
+```
+
+出力結果
+```go
+{"Name":"Mrtest"} // "test"ではなく"Mrtest"とカスタムした値になっている。
+[]uint8
+&{0 Mrtest  0001-01-01 00:00:00 +0000 UTC <nil>} // "test"ではなく"Mrtest"とカスタムした値になっている。
+```
+
+**どのような場面で利用するのか。**
+構造体に別の構造体が含まれており、それが空の場合、`omitempty`による非表示が効かない（ポインタ型にすればできるが）場合がある。  
+その際に不都合なため、非表示するために利用するケースなどがある。
+
+参考：[MarshalJSONを実装する](https://qiita.com/taroshin/items/be00bea3371ade705a2d)
+
+### アンマーシャルのカスタム
+```go
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
+)
+
+// アンマーシャルのカスタム
+
+type A struct{}
+
+type User struct {
+	ID      int       `json:"id"`
+	Name    string    `json:"name"`
+	Email   string    `json:"email"`
+	Created time.Time `json:"created"`
+	A       A         `json:"A"`
+}
+
+// 構造体⇒JSONへの変換時に値をカスタムする
+func (u User) MarshalJSON() ([]byte, error) {
+	v, err := json.Marshal(&struct {
+		Name string
+	}{
+		Name: "Mr" + u.Name,
+	})
+	return v, err
+}
+
+// JSON⇒構造体への変換時に値をカスタムする
+func (u *User) UnmarshalJSON(b []byte) error {
+	// 仮のユーザ型としてUser2型を作成する
+	type User2 struct {
+		Name string
+	}
+	var u2 User2
+	err := json.Unmarshal(b, &u2)
+	if err != nil {
+		fmt.Println(err)
+	}
+	u.Name = u2.Name + "!"
+	return err
+}
+
+func main() {
+
+	u := new(User)
+	u.ID = 1
+	u.Name = "test"
+	u.Email = "test@test.com"
+	u.Created = time.Now()
+
+	// Marshal JSONに変換 ⇒ 返り値：byteのスライス
+	bs, err := json.Marshal(u) // この際にMarshalJSON()メソッドが暗黙的に呼び出されている。
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(bs))
+
+	// -----------------------------------
+
+	fmt.Printf("%T\n", bs) // bsの型を調べる⇒バイトのスライス
+
+	u2 := new(User)
+
+	// Unmarshal JSONをデータに変換
+	if err := json.Unmarshal(bs, u2); err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(u2)
+}
+```
+
+出力結果
+```go
+{"Name":"Mrtest"} // カスタムマーシャルにより、Mrtestに変換
+[]uint8
+&{0 Mrtest!  0001-01-01 00:00:00 +0000 UTC {}} // カスタムアンマーシャルにより、Mrtest⇒Mrtest!に変換
+```
 
 ## sort
 
