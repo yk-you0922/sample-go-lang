@@ -1404,8 +1404,13 @@ func main() {
 ```
 
 ## crypto
+ハッシュ値を生成する機能などを提供するパッケージ  
+参考コード：[strconv-sample](../../../udemy/src/standardLibraries/crypto/main.go)
+
+参考コードのMD5の他にもSHA-1, SHA-256, SHA-512なども対応している。
 
 ## json
+
 
 ## sort
 
