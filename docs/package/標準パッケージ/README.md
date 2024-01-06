@@ -1018,10 +1018,37 @@ exit status 1
 ロガーでファイルの行番号まで指定しているので、行番号まで出力された。
 
 ## strconv
-基本データ型の文字列表現との変換を実装するパッケージ
+基本データ型の文字列表現との変換を実装するパッケージ  
 参考コード：[strconv-sample](../../../udemy/src/standardLibraries/strconv/main.go)
 
 ## strings
+UTF-8 でエンコードされた文字列を操作するための単純な関数を実装  
+参考コード：[strconv-sample](../../../udemy/src/standardLibraries/strings/main.go)
+
+- 文字列結合
+  - strings.Join()
+- 文字列を繰り返して結合
+  - strings.Repeat()
+- 文字列検索
+  - strings.Index()
+  - strings.LastIndex()
+  - strings.IndexAny()
+  - strings.LastIndexAny()
+- 文字列の置換
+  - strings.Replace()
+  - strings.ReplaceAll()
+- 文字列を分割
+  - strings.Split()
+  - strings.SplitAfter()
+  - strings.SplitN()
+  - strings.SplitAfterN()
+- 大文字、小文字の変換
+  - strings.ToLower()
+  - strings.ToUpper()
+- 文字列から空白を取り除く
+  - strings.TrimSpace()
+- 文字列からスペース区切りのフィールドを取り出す
+  - strings.Fields()
 
 
 ## bufio
