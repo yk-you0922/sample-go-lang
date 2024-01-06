@@ -1699,6 +1699,207 @@ func main() {
 ```
 
 ## sort
+スライスなどをソートする機能が用意されているパッケージ
+
+### Ints / Strings
+- Ints : 数値を並び替える
+- Strings : 文字列を並び替える
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func main() {
+	i := []int{5, 3, 2, 4, 5, 6, 4, 8, 9, 8, 7, 10}
+	s := []string{"a", "2", "j"}
+
+	fmt.Println(i, s)
+
+	sort.Ints(i)
+
+	sort.Strings(s)
+
+	fmt.Println(i, s)
+
+}
+```
+
+出力結果
+```
+[5 3 2 4 5 6 4 8 9 8 7 10] [a 2 j]
+[2 3 4 4 5 5 6 7 8 8 9 10] [2 a j]
+```
+
+### Slice / SliceStable
+sort.Sliceとsort.SliceStableの違い
+- sort.Slice : 安定ソートを保証しない
+- sort.SliceStable : 安定ソートを保証する
+
+> NOTE:  
+> 安定ソートとは  
+> 安定ソート（あんていソート、stable sort）とは、ソート（並び替え）のアルゴリズムのうち、  
+> 同等なデータのソート前の順序が、ソート後も保存されるものをいう。つまり、ソート途中の各状態において、  
+> 常に順位の位置関係を保っていることをいう。  
+> たとえば、学生番号順に整列済みの学生データを、テストの点数順で安定ソートを用いて並べ替えたとき、  
+> ソート後のデータにおいて、同じ点数の学生は学生番号順で並ぶようになっている。
+
+Sliceサンプルコード
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type Entry struct {
+	Name string
+	Value int
+}
+
+func main() {
+	el := []Entry{
+		{"A", 20},
+		{"F", 40},
+		{"i", 30},
+		{"b", 10},
+		{"t", 15},
+		{"y", 30},
+		{"c", 30},
+		{"w", 30},
+	}
+	fmt.Println(el)
+
+	// 文字列の順で並び替える
+	// 第一引数：スライス
+	// 第二引数：条件式（無名関数・今回は名前を昇順でソート）
+	sort.Slice(el, func(i, j int) bool {return el[i].Name < el[j].Name})
+
+	fmt.Println("--------------------------------------------------------")
+	fmt.Println(el)
+	fmt.Println("--------------------------------------------------------")
+}
+```
+
+出力結果
+```
+[{A 20} {F 40} {i 30} {b 10} {t 15} {y 30} {c 30} {w 30}]
+--------------------------------------------------------
+[{A 20} {F 40} {b 10} {c 30} {i 30} {t 15} {w 30} {y 30}]
+--------------------------------------------------------
+```
+
+SliceStableのサンプルコード
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type Entry struct {
+	Name string
+	Value int
+}
+
+func main() {
+	el := []Entry{
+		{"A", 20},
+		{"F", 40},
+		{"i", 30},
+		{"b", 10},
+		{"t", 15},
+		{"y", 30},
+		{"c", 30},
+		{"w", 30},
+	}
+	fmt.Println(el)
+
+	// 文字列の順で並び替える
+	sort.SliceStable(el, func(i, j int) bool {return el[i].Name < el[j].Name})
+
+	fmt.Println("--------------------------------------------------------")
+	fmt.Println(el)
+	fmt.Println("--------------------------------------------------------")
+}
+```
+
+出力結果
+```
+[{A 20} {F 40} {i 30} {b 10} {t 15} {y 30} {c 30} {w 30}]
+--------------------------------------------------------
+[{A 20} {F 40} {b 10} {c 30} {i 30} {t 15} {w 30} {y 30}]
+--------------------------------------------------------
+```
+
+### カスタムソート
+- sort.Sort()メソッドを実装する
+- Len(), Swap(), Less()を実装する。※実装しないとコンパイルエラー
+- Less()にてカスタムソートの内容を実装する。
+
+サンプルコード
+```go
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type Entry struct {
+	Name  string
+	Value int
+}
+
+type List []Entry
+
+func (l List) Len() int {
+	return len(l)
+}
+
+func (l List) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+// ここでカスタムする。
+func (l List) Less(i, j int) bool {
+	if l[i].Value == l[j].Value {
+		return (l[i].Name < l[j].Name)
+	} else {
+		return (l[i].Value < l[j].Value)
+	}
+}
+
+func main() {
+	m := map[string]int{"S": 1, "J": 4, "A": 3, "N": 3}
+
+	lt := List{}
+	for k, v := range m {
+		e := Entry{k, v}
+		lt = append(lt, e)
+	}
+
+	// Sort ⇒ Len(), Swap(), Less()の3つの関数を実装することで利用可能となる
+	// Less()にカスタムソートを実装する。
+	// ※実装しなければコンパイルエラー
+	sort.Sort(lt)
+	fmt.Println(lt)
+
+	// Reverse
+	sort.Sort(sort.Reverse(lt))
+	fmt.Println(lt)
+}
+```
+
+出力結果
+```
+[{S 1} {A 3} {N 3} {J 4}] // 昇順
+[{J 4} {N 3} {A 3} {S 1}] // 降順
+```
 
 ## context
 
