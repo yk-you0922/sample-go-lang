@@ -1198,6 +1198,210 @@ func main() {
   - 第二引数：マッチした箇所を何カ所置き換えるか指定する（-1指定の場合は全て置き換える）
 
 ## sync
+goの非同期処理や排他処理を支援する機能がまとめられたパッケージ
+
+非同期処理にはgoroutineとチャネルが提供されているが、あらゆる場面で対応できるわけではない。  
+そのため、syncパッケージを利用し、対応できる場面を増やしていくことが必要。
+
+### 非同期処理の排他制御(sync.Mutex)
+
+下記の例は非同期処理におけるレースコンディション（競合）についての解決サンプルコードとなる。
+
+まずは競合が起こっている状態のコード
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+
+var st struct { A, B, C int}
+
+// 引数の値をstのA、B、Cにそれぞれ代入する。
+func UpdateAndPrint(n int) {
+	st.A = n
+	time.Sleep(time.Microsecond)
+	st.B = n
+	time.Sleep(time.Microsecond)
+	st.C = n
+	time.Sleep(time.Millisecond)
+	fmt.Println(st)
+}
+
+func main() {
+	for i := 0; i < 5; i++ {
+		go func() {
+			for i := 0; i < 1000; i++ {
+				UpdateAndPrint(i)
+			}
+		}()
+	}
+
+	// 無限ループ。UpdateAndPrint()が終わる前にmain関数自体が処理を終えるため設定している。
+	for {
+
+	}
+
+}
+```
+
+実行結果
+```go
+・
+・
+・
+{997 997 998} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{999 997 998} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{997 999 998} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{997 999 999} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{994 997 999} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{998 998 998}
+{999 999 998} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{999 999 999}
+{998 999 999} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{995 998 999} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{998 998 998}
+{996 996 998} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{996 996 996}
+{996 996 998} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{999 999 999}
+{997 999 999} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{997 997 999} // UpdateAndPrint()の処理上、全部同じ値が入るはずなのに、入っていない。
+{997 997 997}
+{998 998 998}
+{999 999 999}
+```
+
+上記のように、全て同じ値が入るはずの関数に対して、異なる値が入っているケースがあり、これが競合状態である。
+
+これを解決するためにsyncパッケージを利用する。（ミューテックスを利用）
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+
+var st struct { A, B, C int}
+
+// ミューテックスを保持するパッケージ変数（参照型）
+var mutex *sync.Mutex
+
+// 引数の値をstのA、B、Cにそれぞれ代入する。
+func UpdateAndPrint(n int) {
+	// ロック⇒アンロックするまでは一つのgoroutineしか処理ができないようにする。
+	mutex.Lock()
+	
+	st.A = n
+	time.Sleep(time.Microsecond)
+	st.B = n
+	time.Sleep(time.Microsecond)
+	st.C = n
+	time.Sleep(time.Millisecond)
+	fmt.Println(st)
+
+	// アンロック⇒またロックするまでは複数のgoroutineが処理できる。
+	mutex.Unlock()
+}
+
+func main() {
+	mutex = new(sync.Mutex)
+
+	for i := 0; i < 5; i++ {
+		go func() {
+			for i := 0; i < 1000; i++ {
+				UpdateAndPrint(i)
+			}
+		}()
+	}
+
+	// 無限ループ。UpdateAndPrint()が終わる前にmain関数自体が処理を終えるため設定している。
+	for {
+
+	}
+
+}
+```
+
+syncのミューテックス型には一つのgoroutineのみがロックを取得できる性質があり、既にロックされているミューテックスに対して別のgoroutineが処理できないようにできる。
+
+処理結果
+```go
+・
+・
+・
+{998 998 998}
+{997 997 997}
+{997 997 997}
+{997 997 997}
+{997 997 997}
+{999 999 999}
+{998 998 998}
+{998 998 998}
+{998 998 998}
+{998 998 998}
+{999 999 999}
+{999 999 999}
+{999 999 999}
+{999 999 999}
+```
+
+全ての値が一致することを確認。
+
+注意）せっかくの非同期処理の意味がなくなるのでロックする範囲や単位は慎重に検討する必要がある。
+
+### goroutineの終了を待ち受ける(sync.WaitGroup)
+下記は3つの非同期処理によるforループを実装している。  
+しかし、sync.WaitGroupを利用しない場合、各標準出力処理が終わるよりも前にmain関数が終了するため、  
+何一つ処理が実施されずに終了する。
+
+```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	// sync.WaitGroupを生成
+	wg := new(sync.WaitGroup)
+
+	// 待ち受けるgoroutineの数は3
+	wg.Add(3)
+
+	go func() {
+		for i := 0; i < 100; i++ {
+			fmt.Println("1st Goroutine")
+		}
+		wg.Done() // 完了
+	}()
+
+	go func() {
+		for i := 0; i < 100; i++ {
+			fmt.Println("2nd Goroutine")
+		}
+		wg.Done() // 完了
+	}()
+
+	go func() {
+		for i := 0; i < 100; i++ {
+			fmt.Println("3rd Goroutine")
+		}
+		wg.Done() // 完了
+	}()
+
+	// goroutineの終了を待ち受ける。wg,Done()が3つ完了するまで待つ。
+	wg.Wait()
+}
+```
 
 ## crypto
 
