@@ -1,28 +1,28 @@
 # 標準パッケージ
 
 ## 公式ドキュメントリンク集
-| No  | パッケージ名    | 説明                                                                                                                              | リンク                       |
-| --- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
-| 1   | os              | オペレーティング システム機能へのプラットフォームに依存しないインターフェイスを提供                                               | https://pkg.go.dev/os        |
-| 2   | time            | パッケージ時間には、時間を測定および表示する機能                                                                                  | https://pkg.go.dev/time      |
-| 3   | math            | 基本的な定数と数学関数を提供                                                                                                      | https://pkg.go.dev/math      |
-| 4   | rand            | シミュレーションなどのタスクに適した擬似乱数生成器を実装。セキュリティが重要な作業には使用しない                                  | https://pkg.go.dev/math/rand |
-| 5   | flag            | コマンドライン フラグ解析を実装                                                                                                   | https://pkg.go.dev/flag      |
-| 6   | fmt             | フォーマットされた I/O を実装                                                                                                     | https://pkg.go.dev/fmt       |
-| 7   | log             | 単純なログ パッケージを実装                                                                                                       | https://pkg.go.dev/log       |
-| 8   | strconv         | 基本データ型の文字列表現との変換を実装                                                                                            | https://pkg.go.dev/strconv   |
-| 9   | strings         | UTF-8 でエンコードされた文字列を操作するための単純な関数を実装                                                                    | https://pkg.go.dev/strings   |
-| 10  | bufio           | バッファリングされた I/O を実装                                                                                                   | https://pkg.go.dev/bufio     |
-| 11  | loutil          | I/O ユーティリティ関数を実装。非推奨: Go 1.16 では、同じ機能がパッケージioまたはパッケージosによって提供されている。              | https://pkg.go.dev/io/ioutil |
-| 12  | regexp          | 正規表現検索を実装                                                                                                                | https://pkg.go.dev/regexp    |
-| 13  | sync            | 相互排他ロックなどの基本的な同期プリミティブを提供。このパッケージで定義されている型を含む値はコピーしない。                      | https://pkg.go.dev/sync      |
-| 14  | crypto          | 共通の暗号定数を収集                                                                                                              | https://pkg.go.dev/crypto    |
-| 15  | json            | RFC 7159で定義されている JSON のエンコードとデコードを実装                                                                        | https://pkg.go.dev/json      |
-| 16  | sort            | スライスとユーザー定義のコレクションをソートするためのプリミティブを提供                                                          | https://pkg.go.dev/sort      |
-| 17  | context         | 期限、キャンセル シグナル、および API 境界を越えてプロセス間でリクエストをスコープとするその他の値を伝達する Context タイプを定義 | https://pkg.go.dev/context   |
-| 18  | net/url         | HTTP クライアントとサーバーの実装を提供                                                                                           | https://pkg.go.dev/net       |
-| 19  | net/http client | HTTP クライアントとサーバーの実装を提供                                                                                           | https://pkg.go.dev/net       |
-| 20  | net/http server | HTTP クライアントとサーバーの実装を提供                                                                                           | https://pkg.go.dev/net       |
+| No  | パッケージ名    | 説明                                                                                                                                                                      | リンク                       |
+| --- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| 1   | os              | オペレーティング システム機能へのプラットフォームに依存しないインターフェイスを提供                                                                                       | https://pkg.go.dev/os        |
+| 2   | time            | パッケージ時間には、時間を測定および表示する機能                                                                                                                          | https://pkg.go.dev/time      |
+| 3   | math            | 基本的な定数と数学関数を提供                                                                                                                                              | https://pkg.go.dev/math      |
+| 4   | rand            | シミュレーションなどのタスクに適した擬似乱数生成器を実装。セキュリティが重要な作業には使用しない                                                                          | https://pkg.go.dev/math/rand |
+| 5   | flag            | コマンドライン フラグ解析を実装                                                                                                                                           | https://pkg.go.dev/flag      |
+| 6   | fmt             | フォーマットされた I/O を実装                                                                                                                                             | https://pkg.go.dev/fmt       |
+| 7   | log             | 単純なログ パッケージを実装                                                                                                                                               | https://pkg.go.dev/log       |
+| 8   | strconv         | 基本データ型の文字列表現との変換を実装                                                                                                                                    | https://pkg.go.dev/strconv   |
+| 9   | strings         | UTF-8 でエンコードされた文字列を操作するための単純な関数を実装                                                                                                            | https://pkg.go.dev/strings   |
+| 10  | bufio           | バッファリングされた I/O を実装                                                                                                                                           | https://pkg.go.dev/bufio     |
+| 11  | loutil          | I/O ユーティリティ関数を実装。非推奨: Go 1.16 では、同じ機能がパッケージioまたはパッケージosによって提供されている。                                                      | https://pkg.go.dev/io/ioutil |
+| 12  | regexp          | 正規表現検索を実装                                                                                                                                                        | https://pkg.go.dev/regexp    |
+| 13  | sync            | 相互排他ロックなどの基本的な同期プリミティブを提供。このパッケージで定義されている型を含む値はコピーしない。                                                              | https://pkg.go.dev/sync      |
+| 14  | crypto          | 共通の暗号定数を収集                                                                                                                                                      | https://pkg.go.dev/crypto    |
+| 15  | json            | RFC 7159で定義されている JSON のエンコードとデコードを実装                                                                                                                | https://pkg.go.dev/json      |
+| 16  | sort            | スライスとユーザー定義のコレクションをソートするためのプリミティブを提供                                                                                                  | https://pkg.go.dev/sort      |
+| 17  | context         | 期限、キャンセル シグナル、および API 境界を越えてプロセス間でリクエストをスコープとするその他の値を伝達する Context タイプを定義<br>主にタイムアウトを設定する際に用いる | https://pkg.go.dev/context   |
+| 18  | net/url         | HTTP クライアントとサーバーの実装を提供                                                                                                                                   | https://pkg.go.dev/net       |
+| 19  | net/http client | HTTP クライアントとサーバーの実装を提供                                                                                                                                   | https://pkg.go.dev/net       |
+| 20  | net/http server | HTTP クライアントとサーバーの実装を提供                                                                                                                                   | https://pkg.go.dev/net       |
 
 
 ## os
@@ -1902,6 +1902,128 @@ func main() {
 ```
 
 ## context
+APIのサーバーやクライアントを利用する際にリクエストに対してタイムアウトやキャンセル処理ができるようにする機能を提供する。
+
+下記はサンプルコード
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+func longProcess(ctx context.Context, ch chan string) { // <1>
+	fmt.Println("開始")
+	time.Sleep(2 * time.Second)
+	fmt.Println("終了")
+	ch <- "実行結果"
+}
+
+func main() {
+	ch := make(chan string)
+
+	ctx := context.Background() // <2>
+
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second) // <3>
+
+	defer cancel() // <4>
+
+	go longProcess(ctx, ch) // <5>
+
+L:
+	for { // <6>
+		select { // <7>
+		case <-ctx.Done():
+			fmt.Println("##########Error##########")
+			fmt.Println(ctx.Err())
+			break L
+		case s := <-ch:
+			fmt.Println(s)
+			fmt.Println("success")
+			break L
+		}
+	}
+
+	fmt.Println("ループ終了")
+}
+```
+解説
+1. longProcess()関数は2秒スリープし、最後に引数のチャネルに文字列"実行結果"を送信する。
+2. あ
+3. contextの引数にcontextとタイムアウト（１秒）を渡し、タイムアウト値を設定する。
+4. 1秒立った場合、遅延処理としてキャンセルをする。
+5. goroutineの非同期処理にてlongProcess()関数を実行する
+6. 無限ループにて、チャネルに送信されたデータを処理する
+7. selectにて、チャネルに文字列が挿入されている場合は"success"を表示し、処理終了。contextが終了している場合はエラーを出力し処理終了。
+
+出力結果
+```
+開始
+##########Error##########
+context deadline exceeded
+ループ終了
+```
+
+エラーとなる。（タイムアウトしている）
+
+タイムアウトをさせないようにするには下記の箇所を設定しなおす必要がある。
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+func longProcess(ctx context.Context, ch chan string) {
+	fmt.Println("開始")
+	time.Sleep(2 * time.Second) // もしくは処理遅延時間をタイムアウト値よりも短くする。
+	fmt.Println("終了")
+	ch <- "実行結果"
+}
+
+func main() {
+	ch := make(chan string)
+
+	ctx := context.Background()
+
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second) // タイムアウトを1秒⇒3秒に変更
+
+	defer cancel()
+
+	go longProcess(ctx, ch)
+
+L:
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("##########Error##########")
+			fmt.Println(ctx.Err())
+			break L
+		case s := <-ch:
+			fmt.Println(s)
+			fmt.Println("success")
+			break L
+		}
+	}
+
+	fmt.Println("ループ終了")
+}
+```
+
+処理結果
+```
+開始
+終了
+実行結果
+success
+ループ終了
+```
+
 
 ## net/url
 
