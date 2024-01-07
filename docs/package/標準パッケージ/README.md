@@ -2030,5 +2030,8 @@ URL文字列を処理する機能を保持したパッケージ
 参考コード: [サンプルコード](../../../udemy/src/standardLibraries/net/url/main.go)
 
 ## net/http client
+HTTPメソッドを用いたGETやPOST処理を提供するパッケージ
+
+参考コード：[](../../../udemy/src/standardLibraries/net/http%20client/main.go)
 
 ## net/http server
