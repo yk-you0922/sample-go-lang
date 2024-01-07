@@ -77,3 +77,28 @@ func main() {
 ## uuid
 `go get "github.com/google/uuid"` でインストール
 
+ソフトウェア上でオブジェクトを一意に識別するためのIDを生成するパッケージ
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/google/uuid"
+)
+
+func main() {
+	uuidObj, _ := uuid.NewUUID()
+	fmt.Println("  ", uuidObj.String())
+
+	uuidObj2, _ := uuid.NewRandom()
+	fmt.Println("  ", uuidObj2.String())
+}
+```
+
+出力結果
+```
+   cc25124d-ad28-11ee-9190-00155d3c9a38
+   c24e3204-a345-420f-9f59-8f1b98fa0f79
+```
