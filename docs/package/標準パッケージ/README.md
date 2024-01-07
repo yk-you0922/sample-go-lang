@@ -2035,3 +2035,119 @@ HTTPメソッドを用いたGETやPOST処理を提供するパッケージ
 参考コード：[](../../../udemy/src/standardLibraries/net/http%20client/main.go)
 
 ## net/http server
+FWの根幹となる機能を提供するパッケージ
+
+参考コード：[](../../../udemy/src/standardLibraries/net/http%20server//main.go)
+
+- http.ListenAndServer()
+  - 第一引数：サーバーのポート。デフォルト値は80番ポート。
+  - 第二引数：ハンドラーを指定する。デフォルトはマルチプレクサ。
+
+### サーバーを起動する
+
+```go
+package main
+
+import "net/http"
+
+func main() {
+	http.ListenAndServe(":8080", nil)
+}
+```
+
+上記で`go run main.go`を実行するとサーバーが起動する。⇒しかし、404 Page Not Foundになる。
+
+これはハンドラーが指定されていないためである。  
+サーバーに何かしらの処理をさせたい場合は、ハンドラーを指定しなければならない。
+
+次にMyHandlerを設定して画面に文字列を表示するサンプルコードに修正する。
+
+### ハンドラーを定義して画面に文字列を表示
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+type MyHandler struct {} // <1>
+
+func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) { // <2>
+	fmt.Fprintf(w, "Hello World")
+}
+
+func main() {
+	http.ListenAndServe(":8080", &MyHandler{}) // <3>
+}
+```
+
+1. ハンドラーの構造体を設定
+2. ハンドラーのメソッドとして`ServeHTTP`を定義し、画面に`Hello World`と表示するように定義
+3. http.ListenAndServe()にてハンドラーをポインタ型で参照するように定義
+
+上記で画面に `Hello World` と表示されるようになった。
+
+しかし、現状はマルチプレクサでの指定をしていないので、どのような操作をしても画面に `Hello World` が表示されるだけの状態になっている。
+
+次にURL毎に異なる処理を実施するようにしたい。
+
+### マルチプレクサの設定
+http.ListenAndServe()の第二引数をnilにしてマルチプレクサを利用する。
+
+```go
+package main
+
+import (
+	"html/template"
+	"log"
+	"net/http"
+)
+
+func top(w http.ResponseWriter, r *http.Request) { // <1>
+	t, err := template.ParseFiles("tmpl.html") // テンプレートの構造体を生成する
+	if err != nil {
+		log.Panicln(err)
+	}
+	t.Execute(w, "Hello World Top Page") // テンプレートの実行。第一引数はレスポンスライター、第二引数はデータを設定。
+}
+
+func about(w http.ResponseWriter, r *http.Request) { // <2>
+	t, err := template.ParseFiles("about.html")
+	if err != nil {
+		log.Panicln(err)
+	}
+	t.Execute(w, "Hello World About Page")
+}
+
+func main() {
+	http.HandleFunc("/top", top) // <3>
+	http.HandleFunc("/about", about) // <4>
+	http.ListenAndServe(":8080", nil) // <5>
+}
+```
+
+1. topページの処理を行う関数を用意する。
+2. aboutページの処理を行う関数を用意する。
+3. http.HandleFunc()にて、第一引数にURLパス、第二引数に関数を設定する。(/topに対してtop関数)
+4. http.HandleFunc()にて、第一引数にURLパス、第二引数に関数を設定する。(/aboutに対してabout関数)
+5. マルチプレクサを利用するため、第二引数をnilにする。
+
+上記で `http://localhost:8080/top` と `http://localhost:8080/about` に遷移すると、それぞれ行いたい表示処理ができている。
+
+各種HTMLの補足  
+tmpl.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go Web Programming</title>
+</head>
+<body>
+  {{ . }} <!-- この記述により、t.Execute(w, "Hello World Top Page")の文字列が表示される。 -->
+</body>
+</html>
+```
