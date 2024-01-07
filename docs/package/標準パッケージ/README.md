@@ -2024,8 +2024,10 @@ success
 ループ終了
 ```
 
-
 ## net/url
+URL文字列を処理する機能を保持したパッケージ
+
+参考コード: [サンプルコード](../../../udemy/src/standardLibraries/net/url/main.go)
 
 ## net/http client
 
